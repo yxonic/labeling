@@ -21,13 +21,13 @@
                   :only-existing-tags="true"
                   :typeahead="true">
               </tags-input>
-              <div v-if="f.type == 'text'">
+              <div v-if="f.type == 'text'" @click.stop='loseFocus'>
                 {{row.item[f.key]}}
               </div>
-              <div v-if="f.type == 'html'">
+              <div v-if="f.type == 'html'" @click.stop='loseFocus'>
                 <span v-html="row.item[f.key]"></span>
               </div>
-              <div v-if="f.type == 'code'">
+              <div v-if="f.type == 'code'" @click.stop='loseFocus'>
                 <pre>{{row.item[f.key]}}</pre>
               </div>
               <div v-if="!row.item.edit && row.item[f.key] && f.type == 'class'">
@@ -130,9 +130,7 @@ export default {
           continue
         item[key] = this.items[index][key]
       }
-      this.axios.put('http://127.0.0.1:5000/oj/' + id, item).then((response) => {
-        console.log(response)
-      })
+      this.axios.put('http://127.0.0.1:5000/oj/' + id, item).then((response) => {})
     }
   },
 
