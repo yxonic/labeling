@@ -74,20 +74,20 @@ export default {
 
   methods: {
     init () {
-      this.axios.get('http://127.0.0.1:5000/oj').then((response) => {
+      this.axios.get('/labeling-api/oj').then((response) => {
         this.fields = response.data.fields
         this.instructions = response.data.instructions || response.data.fields
         for (var i in this.fields) {
           window.Vue.set(this.inputs, this.fields[i].key, '')
         }
       })
-      this.axios.get('http://127.0.0.1:5000/oj/page/1').then((response) => {
+      this.axios.get('/labeling-api/oj/page/1').then((response) => {
         this.items = response.data.documents
         this.nPages = response.data.count
       })
     },
     gotoPage (pageNum) {
-      this.axios.get('http://127.0.0.1:5000/oj/page/' + pageNum).then((response) => {
+      this.axios.get('/labeling-api/oj/page/' + pageNum).then((response) => {
         this.items = response.data.documents
       })
     },
@@ -130,7 +130,7 @@ export default {
           continue
         item[key] = this.items[index][key]
       }
-      this.axios.put('http://127.0.0.1:5000/oj/' + id, item).then((response) => {})
+      this.axios.put('/labeling-api/oj/' + id, item).then((response) => {})
     }
   },
 
