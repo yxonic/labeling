@@ -24,6 +24,12 @@
               <div v-if="f.type == 'text'">
                 {{row.item[f.key]}}
               </div>
+              <div v-if="f.type == 'html'">
+                <span v-html="row.item[f.key]"></span>
+              </div>
+              <div v-if="f.type == 'code'">
+                <pre>{{row.item[f.key]}}</pre>
+              </div>
               <div v-if="!row.item.edit && row.item[f.key] && f.type == 'class'">
                 {{f.choices[row.item[f.key]]}}
               </div>
@@ -114,7 +120,8 @@ export default {
     save_editing (index) {
       for (var i in this.fields) {
         var field = this.fields[i].key
-        window.Vue.set(this.items[index], field, this.inputs[field])
+        if (this.inputs[field])
+          window.Vue.set(this.items[index], field, this.inputs[field])
         this.inputs[field] = ''
       }
       var id = this.items[index].id, item = {}
