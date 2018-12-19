@@ -49,8 +49,8 @@
       <!-- pagination -->
       <b-pagination-nav align="center"
           size="sm"
+          :link-gen="pageLink"
           :limit=10
-          :link-gen="gotoPage"
           :number-of-pages="nPages"
           v-model="currentPage" />
     </b-container>
@@ -83,13 +83,11 @@ export default {
       })
       this.axios.get('/labeling-api/oj/page/1').then((response) => {
         this.items = response.data.documents
-        this.nPages = response.data.count
+        this.nPages = response.data.total
       })
     },
-    gotoPage (pageNum) {
-      this.axios.get('/labeling-api/oj/page/' + pageNum).then((response) => {
-        this.items = response.data.documents
-      })
+    pageLink (pageNum) {
+      return '#'
     },
     edit (item, index) {
       if (this.editing < 0) {
@@ -131,6 +129,14 @@ export default {
         item[key] = this.items[index][key]
       }
       this.axios.put('/labeling-api/oj/' + id, item).then((response) => {})
+    }
+  },
+
+  watch: {
+    currentPage: function(page) {
+      this.axios.get('/labeling-api/oj/page/' + page).then((response) => {
+        this.items = response.data.documents
+      })
     }
   },
 
