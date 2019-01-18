@@ -74,14 +74,15 @@ export default {
 
   methods: {
     init () {
-      this.axios.get('/labeling-api/oj').then((response) => {
+      const url = '/api/labeling/v1/' + this.$route.params.dataset
+      this.axios.get(url).then((response) => {
         this.fields = response.data.fields
         this.instructions = response.data.instructions || response.data.fields
         for (var i in this.fields) {
           window.Vue.set(this.inputs, this.fields[i].key, '')
         }
       })
-      this.axios.get('/labeling-api/oj/page/1').then((response) => {
+      this.axios.get(url + '/page/1').then((response) => {
         this.items = response.data.documents
         this.nPages = response.data.total
       })
@@ -128,15 +129,20 @@ export default {
           continue
         item[key] = this.items[index][key]
       }
-      this.axios.put('/labeling-api/oj/' + id, item).then((response) => {})
+      const url = '/api/labeling/v1/' + this.$route.params.dataset
+      this.axios.put(url + id, item).then((response) => {})
     }
   },
 
   watch: {
     currentPage: function(page) {
-      this.axios.get('/labeling-api/oj/page/' + page).then((response) => {
+      const url = '/api/labeling/v1/' + this.$route.params.dataset
+      this.axios.get(url + '/page/' + page).then((response) => {
         this.items = response.data.documents
       })
+    },
+    '$route': function () {
+      this.init()
     }
   },
 
