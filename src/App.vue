@@ -74,7 +74,7 @@ export default {
 
   methods: {
     init () {
-      const url = '/api/labeling/v1/' + this.$route.params.dataset
+      const url = 'https://base.ustc.edu.cn/api/labeling/v1/' + this.$route.params.dataset
       this.axios.get(url).then((response) => {
         this.fields = response.data.fields
         this.instructions = response.data.instructions || response.data.fields
@@ -129,14 +129,14 @@ export default {
           continue
         item[key] = this.items[index][key]
       }
-      const url = '/api/labeling/v1/' + this.$route.params.dataset
+      const url = 'https://base.ustc.edu.cn/api/labeling/v1/' + this.$route.params.dataset
       this.axios.put(url + id, item).then((response) => {})
     }
   },
 
   watch: {
     currentPage: function(page) {
-      const url = '/api/labeling/v1/' + this.$route.params.dataset
+      const url = 'https://base.ustc.edu.cn/api/labeling/v1/' + this.$route.params.dataset
       this.axios.get(url + '/page/' + page).then((response) => {
         this.items = response.data.documents
       })
