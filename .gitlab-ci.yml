@@ -1,0 +1,75 @@
+variables:
+  CI_DEPLOY_NAMESPACE: "$CI_PROJECT_NAME-$CI_PROJECT_ID"
+
+cache:
+  paths:
+    - node_modules/
+
+stages:
+  - build
+  - test
+  - staging
+  - production
+
+build:
+  image: node:latest
+  stage: build
+  script:
+    - npm install
+    - npm run build
+
+test:
+  image: node:latest
+  stage: test
+  script:
+    - npm install -D
+    #####
+    # test scripts (such as jest) goes here
+    ###
+
+release:
+  stage: test
+  image: docker:latest
+  script:
+    - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
+    - docker build -t ${CI_REGISTRY_IMAGE} .
+    - docker push ${CI_REGISTRY_IMAGE}
+
+staging:
+  stage: staging
+  image: lwolf/helm-kubectl-docker:latest
+  before_script:
+    - helm init --client-only --stable-repo-url https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
+  script:
+    - mkdir -p ./output
+    - helm template --name $CI_PROJECT_NAME-staging --namespace $CI_DEPLOY_NAMESPACE --output-dir ./output . --set "ingress.enabled=true,ingress.hosts[0].host=$CI_DEPLOY_NAMESPACE-staging.deploy.bdaa.dev,ingress.hosts[0].paths[0]=/,image.repository=${CI_REGISTRY_IMAGE},image.tag=latest"
+    - kubectl apply --namespace $CI_DEPLOY_NAMESPACE --recursive --filename ./output -o yaml
+    - kubectl get ingress $CI_PROJECT_NAME-staging --namespace $CI_DEPLOY_NAMESPACE
+  environment:
+    name: staging
+    url: https://$CI_DEPLOY_NAMESPACE-staging.deploy.bdaa.dev
+  only:
+    refs:
+      - master
+    kubernetes: active
+
+production:
+  stage: production
+  image: lwolf/helm-kubectl-docker:latest
+  before_script:
+    - export TILLER_NAMESPACE=gitlab-managed-apps
+    - helm init --client-only --stable-repo-url https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
+  script:
+    - export PROJECT_SLUG="$CI_PROJECT_NAME-$CI_PROJECT_ID"
+    - mkdir -p ./output
+    - helm template --name $CI_PROJECT_NAME --namespace $CI_DEPLOY_NAMESPACE --output-dir ./output .  --set "ingress.enabled=true,ingress.hosts[0].host=$CI_DEPLOY_NAMESPACE.deploy.bdaa.dev,ingress.hosts[0].paths[0]=/,image.repository=${CI_REGISTRY_IMAGE},image.tag=latest"
+    - kubectl apply --namespace $CI_DEPLOY_NAMESPACE --recursive --filename ./output -o yaml
+    - kubectl get ingress $CI_PROJECT_NAME --namespace $CI_DEPLOY_NAMESPACE
+  environment:
+    name: production
+    url: https://$CI_DEPLOY_NAMESPACE.deploy.bdaa.dev
+  when: manual
+  only:
+    refs:
+      - master
+    kubernetes: active
