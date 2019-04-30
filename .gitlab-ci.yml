@@ -31,8 +31,6 @@ test:
     #####
     # test scripts (such as jest) goes here
     ###
-  dependencies:
-    - build
 
 build_image:
   stage: test
@@ -41,8 +39,6 @@ build_image:
     - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
     - docker build -t ${CI_REGISTRY_IMAGE} .
     - docker push ${CI_REGISTRY_IMAGE}
-  dependencies:
-    - build
 
 staging:
   stage: staging
