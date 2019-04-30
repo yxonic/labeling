@@ -129,14 +129,14 @@ export default {
           continue
         item[key] = this.items[index][key]
       }
-      const url = 'https://labeling-backend-23-staging.deploy.bdaa.dev/v1/' + this.$route.params.dataset
+      const url = 'https://labeling-backend-23.deploy.bdaa.dev/v1/' + this.$route.params.dataset
       this.axios.put(url + id, item).then((response) => {})
     }
   },
 
   watch: {
     currentPage: function(page) {
-      const url = 'https://labeling-backend-23-staging.deploy.bdaa.dev/v1/' + this.$route.params.dataset
+      const url = 'https://labeling-backend-23.deploy.bdaa.dev/v1/' + this.$route.params.dataset
       this.axios.get(url + '/page/' + page).then((response) => {
         this.items = response.data.documents
       })
