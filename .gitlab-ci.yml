@@ -42,7 +42,7 @@ build_image:
 
 staging:
   stage: staging
-  image: lwolf/helm-kubectl-docker:latest
+  image: lwolf/helm-kubectl-docker:v1.14.1-v2.13.1
   before_script:
     - helm init --client-only --stable-repo-url https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
   script:
@@ -60,7 +60,7 @@ staging:
 
 production:
   stage: production
-  image: lwolf/helm-kubectl-docker:latest
+  image: lwolf/helm-kubectl-docker:v1.14.1-v2.13.1
   before_script:
     - export TILLER_NAMESPACE=gitlab-managed-apps
     - helm init --client-only --stable-repo-url https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
