@@ -74,7 +74,7 @@ export default {
 
   methods: {
     init () {
-      const url = 'https://labeling-backend-23-staging.deploy.bdaa.dev/v1/' + this.$route.params.dataset
+      const url = 'https://labeling-backend-23.deploy.bdaa.dev/v1/' + this.$route.params.dataset
       this.axios.get(url).then((response) => {
         this.fields = response.data.fields
         this.instructions = response.data.instructions || response.data.fields
